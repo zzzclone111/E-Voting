@@ -1,3 +1,5 @@
+# E_voting system
+## Installation
 1. **Clone the repository**
 ```bash
 git clone https://github.com/zzzclone111/E-Voting.git
