@@ -95,7 +95,7 @@ class VoteView(LoginRequiredMixin, View):
     def _can_vote(self, user, election, candidate):
         """Check if user can vote in this election for this candidate"""
         # Check if voting is open
-        if not election.is_voting_open():
+        if not (election.is_voting_open() and election.can_vote()):
             messages.error(user, "Voting is not currently open for this election.")
             return False
         

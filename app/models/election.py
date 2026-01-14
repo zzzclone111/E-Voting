@@ -55,6 +55,11 @@ class Election(models.Model):
         # Elections are only open when active = True and today is between start and end
         return self.active and self.start_date <= now <= self.end_date
     
+    def can_vote(self):
+        from django.utils import timezone
+        now = timezone.now()
+        return self.active and self.started_at <= now
+
     def is_editable(self):
         """Check if this election can be edited"""
         from django.utils import timezone
@@ -74,10 +79,6 @@ class Election(models.Model):
         """Check if results can be displayed for this election"""
         from django.utils import timezone
         now = timezone.now()
-        
-        # Election results are available when:
-        # 1. Election has been explicitly closed (closed_at is set), OR
-        # 2. Election is inactive and voting period has naturally ended
         return (self.closed_at is not None or 
                 (not self.active and now > self.end_date))
     

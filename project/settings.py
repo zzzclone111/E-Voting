@@ -17,7 +17,7 @@ import os
 env = environ.Env(
     # Set casting, default value
     DEBUG=(bool, True),
-    SECRET_KEY=(str, 'django-insecure-w=tfvfl2c!o30i0r%1-%g(z3*4y+2eebd9k77#lt6n-$!f0yk('),
+    SECRET_KEY=(str, ''),
     FIELD_ENCRYPTION_KEY=(str, ''),
     ENCRYPTION_KEY_PATH=(str, ''),
     ALLOWED_HOSTS=(list, ['localhost', '127.0.0.1']),
@@ -30,9 +30,6 @@ env = environ.Env(
     ACCOUNT_EMAIL_REQUIRED=(bool, True),
     ACCOUNT_UNIQUE_EMAIL=(bool, True),
     ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION=(bool, True),
-    SOCIALACCOUNT_AUTO_SIGNUP=(bool, True),
-    SOCIALACCOUNT_LOGIN_ON_GET=(bool, False),
-    SOCIALACCOUNT_QUERY_EMAIL=(bool, True),
     STATIC_URL=(str, 'static/'),
     MEDIA_URL=(str, 'media/'),
     LOGIN_REDIRECT_URL=(str, '/'),
@@ -53,14 +50,11 @@ env = environ.Env(
     CSRF_COOKIE_SECURE=(bool, False),
     SECURE_BROWSER_XSS_FILTER=(bool, True),
     SECURE_CONTENT_TYPE_NOSNIFF=(bool, True),
-    # Google OAuth2
-    GOOGLE_OAUTH2_CLIENT_ID=(str, ''),
-    GOOGLE_OAUTH2_CLIENT_SECRET=(str, ''),
 )
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
@@ -265,29 +259,6 @@ ACCOUNT_UNIQUE_EMAIL = env('ACCOUNT_UNIQUE_EMAIL')
 ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = env('ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION')
 ACCOUNT_LOGIN_METHODS = {'username', 'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'username*', 'password1*', 'password2*']
-SOCIALACCOUNT_AUTO_SIGNUP = env('SOCIALACCOUNT_AUTO_SIGNUP')
-SOCIALACCOUNT_LOGIN_ON_GET = env('SOCIALACCOUNT_LOGIN_ON_GET')
-SOCIALACCOUNT_QUERY_EMAIL = env('SOCIALACCOUNT_QUERY_EMAIL')
-
-# Google OAuth settings
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        },
-        'OAUTH_PKCE_ENABLED': True,
-        'FETCH_USERINFO': True,
-        'APP': {
-            'client_id': env('GOOGLE_OAUTH2_CLIENT_ID'),
-            'secret': env('GOOGLE_OAUTH2_CLIENT_SECRET'),
-            'key': ''
-        }
-    }
-}
 
 # Encryption settings
 ENCRYPTION_KEY_PATH = env('ENCRYPTION_KEY_PATH')
