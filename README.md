@@ -21,7 +21,7 @@ pip install -r requirements.txt
 4. **Environment setup**
 ```bash
 # Create .env file for environment variables
-cp .env.example .env
+cp .env.production.template .env
 # Edit .env with your configuration
 ```
 
