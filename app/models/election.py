@@ -25,11 +25,6 @@ class Election(models.Model):
     # Encryption-related fields
     private_key = models.CharField(max_length=500, default="", editable=False)
     public_key = models.CharField(max_length=500, default="", editable=False)
-    encrypted_positive_total = models.CharField(max_length=5000, default="", editable=False)
-    encrypted_negative_total = models.CharField(max_length=5000, default="", editable=False)
-    encrypted_zero_sum = models.CharField(max_length=5000, default="", editable=False)
-    zero_randomness = models.CharField(max_length=5000, default="", editable=False)
-    decrypted_total = models.CharField(max_length=500, default="", editable=False)
     
     # Privacy and access control
     is_public = models.BooleanField(
