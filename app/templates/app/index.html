@@ -1,0 +1,165 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Hero Banner - Full Width Half Height -->
+<section class="bg-primary text-white d-flex align-items-center py-5">
+  <div class="container py-5">
+    <div class="row align-items-center">
+      <div class="col-lg-8 col-md-10 mx-auto text-center">
+        <h1 class="display-1 fw-thin mb-4">Welcome to E-Voting</h1>
+        <p class="lead mb-4">A secure electronic voting platform that ensures transparency and privacy in democratic elections.</p>
+        {% comment %} <div class="d-flex flex-wrap justify-content-center gap-3">
+          {% if request.user.is_authenticated %}
+            <a href="{% url 'election_list' %}" class="btn btn-light btn-lg">
+              <i class="bi bi-check-square me-2"></i>View Elections
+            </a>
+            <a href="{% url 'profile' %}" class="btn btn-outline-light btn-lg">
+              <i class="bi bi-person me-2"></i>My Profile
+            </a>
+          {% else %}
+            <a href="{% url 'login' %}" class="btn btn-light btn-lg">
+              <i class="bi bi-box-arrow-in-right me-2"></i>Login to Vote
+            </a>
+          {% endif %}
+        </div> {% endcomment %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Elections Overview Section -->
+{% if elections_count.total > 0 %}
+<section class="bg-white py-5">
+  <div class="container">
+    <!-- Ongoing Elections -->
+    {% if ongoing_elections %}
+    <div class="mb-5">
+      <div class="text-center mb-4">
+        <h2 class="h3 fw-thin">Ongoing</h2>
+        <p class="text-muted">Elections currently accepting votes</p>
+      </div>
+      <div class="row g-4">
+        {% for election in ongoing_elections %}
+        <div class="col-lg-4">
+          {% include 'app/partials/election_card.html' with election=election %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Upcoming Elections -->
+    {% if upcoming_elections %}
+    <div class="mb-5">
+      <div class="text-center mb-4">
+        <h2 class="h3 fw-thin">Upcoming</h2>
+        <p class="text-muted">Elections starting soon</p>
+      </div>
+      <div class="row g-4">
+        {% for election in upcoming_elections %}
+        <div class="col-lg-4">
+          {% include 'app/partials/election_card.html' with election=election %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recently Closed Elections -->
+    {% if recently_closed_elections %}
+    <div class="mb-5">
+      <div class="text-center mb-4">
+        <h2 class="h3 fw-thin">Concluded</h2>
+        <p class="text-muted">Recently completed elections</p>
+      </div>
+      <div class="row g-4">
+        {% for election in recently_closed_elections %}
+        <div class="col-lg-4">
+          {% include 'app/partials/election_card.html' with election=election %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- View All Elections Button -->
+    <div class="text-center">
+      <a href="{% url 'election_list' %}" class="btn btn-outline-success">
+        <i class="bi bi-list me-2"></i>View All Elections
+      </a>
+    </div>
+
+  </div>
+</section>
+
+{% else %}
+  <!-- No Elections Section -->
+  <div class="container">
+    <div class="text-center py-5">
+      <div class="mb-4">
+        <i class="bi bi-card-checklist text-muted" style="font-size: 4rem;"></i>
+      </div>
+      <h3 class="fw-thin mb-3">No Elections Available</h3>
+      <p class="lead text-muted mb-4">There are currently no elections scheduled. Please check back later.</p>
+      {% if request.user.is_authenticated %}
+        <a href="{% url 'profile' %}" class="btn btn-outline-primary">
+          <i class="bi bi-person me-2"></i>View Your Profile
+        </a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-5">
+  <div class="container">
+    <div class="text-center mb-5">
+      <h2 class="display-3 fw-thin">Why Choose E-Voting?</h2>
+      <p class="lead text-muted">Built with modern technology for secure and transparent elections</p>
+    </div>
+    <div class="row g-4">
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 text-center border-0">
+          <div class="card-body p-4">
+            <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 4rem; height: 4rem;">
+              <i class="bi bi-shield-check fs-4"></i>
+            </div>
+            <h4 class="fw-thin mb-3">Secure &amp; Private</h4>
+            <p class="text-muted">Advanced cryptographic methods ensure your vote remains private and secure using homomorphic encryption.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 text-center border-0">
+          <div class="card-body p-4">
+            <div class="bg-warning text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 4rem; height: 4rem;">
+              <i class="bi bi-eye fs-4"></i>
+            </div>
+            <h4 class="fw-thin mb-3">Transparent &amp; Verifiable</h4>
+            <p class="text-muted">Election results are publicly verifiable while maintaining complete voter privacy and anonymity.</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 text-center border-0">
+          <div class="card-body p-4">
+            <div class="bg-info text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 4rem; height: 4rem;">
+              <i class="bi bi-check-circle fs-4"></i>
+            </div>
+            <h4 class="fw-thin mb-3">Easy &amp; Accessible</h4>
+            <p class="text-muted">User-friendly interface makes voting simple and accessible to everyone, anywhere, anytime.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- How It Works Link -->
+    <div class="text-center mt-5">
+      <a href="{% url 'how' %}" class="btn btn-outline-success">
+        <i class="bi bi-question-circle me-2"></i>Learn How It Works
+      </a>
+    </div>
+  </div>
+</section>
+{% endblock %}

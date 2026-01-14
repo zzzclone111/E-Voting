@@ -1,0 +1,75 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Page Header - Full Width -->
+<header class="bg-primary text-white py-4 mb-0">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center">
+      <h1 class="mb-0">Elections</h1>
+      {% if request.user.is_election_creator %}
+        <a class="btn btn-outline-light" href="{% url 'create_election' %}">
+          New Election
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</header>
+
+{% include 'app/partials/breadcrumbs.html' %}
+
+<!-- Content Section -->
+<article class="container py-5">
+  <div class="row">
+    <!-- Sidebar Filters -->
+    <div class="col-lg-3 mb-4">
+      {% include 'app/partials/election_filters.html' %}
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-lg-9">
+      {% if elections %}
+        <!-- Results Summary -->
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <div>
+            <small class="text-muted">
+              Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} elections
+            </small>
+          </div>
+          {% if page_obj.paginator.num_pages > 1 %}
+            <div>
+              <small class="text-muted">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+              </small>
+            </div>
+          {% endif %}
+        </div>
+
+        <div class="row">
+          {% for election in elections %}
+            <div class="col-md-6 mb-3">
+              {% include 'app/partials/election_card.html' %}
+            </div>
+          {% endfor %}
+        </div>
+
+        <!-- Pagination Controls -->
+        {% include 'app/partials/paginator.html' with page_obj=page_obj query_params=query_params aria_label="Election pagination" %}
+      {% else %}
+        <!-- No Elections Message -->
+        <div class="alert alert-info">
+          <i class="bi bi-info-circle me-2"></i>
+          <strong>No Elections Found:</strong> 
+          {% if search_term or selected_statuses or selected_date_range != 'all' %}
+            No elections match your current filters. Try adjusting your search criteria.
+          {% else %}
+            There are currently no elections available.
+          {% endif %}
+          {% if request.user.is_election_creator %}
+            <a href="{% url 'create_election' %}" class="alert-link">Create a new election</a>.
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</article>
+{% endblock %}

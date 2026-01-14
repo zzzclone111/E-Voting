@@ -1,0 +1,59 @@
+<!-- New candidate form -->
+<div class="candidate-form border rounded p-3 mb-3 bg-white" id="candidate-form-{{ form_index }}">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="mb-0 text-primary">
+            <i class="bi bi-person me-1"></i>Candidate {{ candidate_number }}
+        </h6>
+        <button type="button" 
+                class="btn btn-sm btn-outline-danger"
+                hx-delete="{% url 'remove_candidate_form' %}"
+                hx-target="#candidate-form-{{ form_index }}"
+                hx-swap="outerHTML"
+                hx-confirm="Are you sure you want to remove this candidate?"
+                title="Remove this candidate">
+            <i class="bi bi-trash"></i> Remove
+        </button>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 mb-3">
+            <label for="id_form-{{ form_index }}-user" class="form-label">User</label>
+            <select name="form-{{ form_index }}-user" class="form-select" id="id_form-{{ form_index }}-user">
+                <option value="">---------</option>
+                {% for user in form.user.field.queryset %}
+                <option value="{{ user.pk }}">{{ user.get_full_name|default:user.username }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="id_form-{{ form_index }}-party" class="form-label">Party</label>
+            <select name="form-{{ form_index }}-party" class="form-select" id="id_form-{{ form_index }}-party">
+                <option value="">---------</option>
+                {% for party in form.party.field.queryset %}
+                <option value="{{ party.pk }}">{{ party.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4 mb-3">
+            <label for="id_form-{{ form_index }}-symbol" class="form-label">Symbol</label>
+            <input type="file" name="form-{{ form_index }}-symbol" class="form-control" id="id_form-{{ form_index }}-symbol">
+        </div>
+    </div>
+</div>
+
+<!-- Update the candidate count badge -->
+<script>
+    const badge = document.getElementById('candidate-count');
+    const count = {{ total_candidates }};
+    badge.textContent = count === 1 ? '1 candidate' : `${count} candidates`;
+    badge.className = count >= 2 ? 'badge bg-success' : 'badge bg-info';
+    
+    // Update the total forms count
+    document.getElementById('id_form-TOTAL_FORMS').value = count;
+    
+    // Update button text
+    const addButton = document.querySelector('#add-candidate-container button');
+    if (addButton) {
+        addButton.innerHTML = '<i class="bi bi-plus-circle me-2"></i>Add Another Candidate';
+    }
+</script>

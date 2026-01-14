@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Election Invitation</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: #28a745; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0; }
+        .content { background: #f8f9fa; padding: 30px; border-radius: 0 0 8px 8px; }
+        .btn { display: inline-block; padding: 12px 24px; background: #28a745; color: white; text-decoration: none; border-radius: 5px; margin: 10px 5px; }
+        .btn-secondary { background: #6c757d; }
+        .info-box { background: white; padding: 15px; border-left: 4px solid #28a745; margin: 20px 0; }
+        .footer { text-align: center; margin-top: 20px; font-size: 12px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🗳️ Election Invitation</h1>
+            <p>You've been invited to participate!</p>
+        </div>
+        
+        <div class="content">
+            <h2>{{ election.name }}</h2>
+            <p>{{ election.description }}</p>
+            
+            <div class="info-box">
+                <strong>Invited by:</strong> {{ invited_by.get_full_name|default:invited_by.username }}<br>
+                <strong>Voting Period:</strong><br>
+                📅 <strong>From:</strong> {{ election.start_date|date:"F d, Y H:i" }}<br>
+                📅 <strong>To:</strong> {{ election.end_date|date:"F d, Y H:i" }}
+            </div>
+            
+            {% if invitation.message %}
+            <div class="info-box">
+                <strong>Personal Message:</strong><br>
+                <em>{{ invitation.message }}</em>
+            </div>
+            {% endif %}
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <a href="{{ invitation_url }}" class="btn">
+                    ✅ Respond to Invitation
+                </a>
+            </div>
+            
+            <p><strong>⏰ Important:</strong> This invitation will expire on {{ invitation.expires_at|date:"F d, Y H:i" }}.</p>
+            
+            <hr style="margin: 30px 0; border: none; border-top: 1px solid #ddd;">
+            
+            <p style="font-size: 14px; color: #666;">
+                If you cannot click the button above, copy and paste this link into your browser:<br>
+                <a href="{{ invitation_url }}">{{ invitation_url }}</a>
+            </p>
+        </div>
+        
+        <div class="footer">
+            <p>Intikhab - Electronic Voting System</p>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,23 @@
+You have been invited to participate in an election!
+
+Election: {{ election.name }}
+{{ election.description }}
+
+Invited by: {{ invited_by.get_full_name|default:invited_by.username }}
+
+Voting Period:
+From: {{ election.start_date|date:"F d, Y H:i" }}
+To: {{ election.end_date|date:"F d, Y H:i" }}
+
+{% if invitation.message %}
+Personal Message:
+{{ invitation.message }}
+{% endif %}
+
+To respond to this invitation, please visit:
+{{ invitation_url }}
+
+This invitation will expire on {{ invitation.expires_at|date:"F d, Y H:i" }}.
+
+---
+Intikhab - Electronic Voting System

@@ -1,0 +1,84 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="bg-primary text-white py-4 mb-0">
+  <div class="container">
+    <h1 class="mb-0">Remove Candidate</h1>
+    <p class="mb-0 lead">Confirm candidate removal from election</p>
+  </div>
+</header>
+
+{% include 'app/partials/breadcrumbs.html' %}
+
+<!-- Content Section -->
+<article class="container py-5">
+  <form method="post">
+    {% csrf_token %}
+    <div class="card border-0">
+      <div class="card-header border-0">
+        <h5 class="card-title mb-0">
+          <i class="bi bi-exclamation-triangle me-2"></i>Confirm Removal
+        </h5>
+      </div>
+      <div class="card-body">
+        <div class="alert alert-warning">
+          <i class="bi bi-info-circle me-2"></i>
+          <strong>Warning:</strong> This action cannot be undone. The candidate will be permanently removed from this election.
+        </div>
+        
+        <div class="row mb-4">
+          <div class="col-md-4 text-center">
+            {% if candidate.user.profile and candidate.user.profile.avatar %}
+              <img src="{{ candidate.user.profile.avatar.url }}" alt="{{ candidate.user.get_full_name }}" class="img-fluid mb-3 rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+            {% elif candidate.symbol %}
+              <img src="{{ candidate.symbol.url }}" alt="{{ candidate.user.get_full_name }}" class="img-fluid mb-3 rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+            {% else %}
+              <div class="bg-light rounded-circle d-flex align-items-center justify-content-center mb-3 mx-auto" style="width: 100px; height: 100px;">
+                <i class="bi bi-person-fill text-muted" style="font-size: 2.5rem;"></i>
+              </div>
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            <h4>{{ candidate.user.get_full_name }}</h4>
+            <p class="text-muted mb-2">
+              <i class="bi bi-card-checklist me-1"></i>
+              Election: <strong>{{ candidate.election.name }}</strong>
+            </p>
+            {% if candidate.party %}
+              <p class="text-muted mb-2">
+                <i class="bi bi-flag me-1"></i>
+                Party: <strong>{{ candidate.party.name }}</strong>
+              </p>
+            {% else %}
+              <p class="text-muted mb-2">
+                <i class="bi bi-person me-1"></i>
+                <strong>Independent Candidate</strong>
+              </p>
+            {% endif %}
+            <p class="text-muted mb-0">
+              <i class="bi bi-calendar me-1"></i>
+              Added: {{ candidate.created|date:"M d, Y" }}
+            </p>
+          </div>
+        </div>
+        
+        <p class="mb-0">
+          Are you sure you want to remove <strong>{{ candidate.user.get_full_name }}</strong> 
+          from the election "<strong>{{ candidate.election.name }}</strong>"?
+        </p>
+      </div>
+      <div class="card-footer border-0 bg-transparent">
+        <div class="d-flex gap-3 justify-content-end">
+          <a href="{% url 'candidate_detail' uuid=candidate.uuid %}" class="btn btn-secondary">
+            Cancel
+          </a>
+          <button type="submit" class="btn btn-danger">
+            Remove Candidate
+          </button>
+        </div>
+      </div>
+    </div>
+  </form>
+</article>
+{% endblock %}

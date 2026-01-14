@@ -1,0 +1,108 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Header Section -->
+<header class="bg-primary text-white py-4 mb-0">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="mb-0">Election Invitation</h1>
+      <p class="lead mb-0">You've been invited to participate</p>
+    </div>
+  </div>
+</header>
+
+<!-- Content Section -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      
+      <!-- Invitation Details Card -->
+      <div class="card border-0 mb-4">
+        <div class="card-body text-center">
+          <div class="mb-4">
+            <i class="bi bi-envelope-heart display-4 text-primary"></i>
+          </div>
+          
+          <h2 class="card-title mb-3">{{ invitation.election.name }}</h2>
+          <p class="card-text text-muted mb-4">{{ invitation.election.description }}</p>
+          
+          <!-- Election Details -->
+          <div class="row text-center mb-4">
+            <div class="col-md-6">
+              <div class="border-end">
+                <div class="h6 text-muted">Voting Starts</div>
+                <div class="fw-bold">{{ invitation.election.start_date|date:"M d, Y" }}</div>
+                <div class="small text-muted">{{ invitation.election.start_date|date:"H:i" }}</div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="h6 text-muted">Voting Ends</div>
+              <div class="fw-bold">{{ invitation.election.end_date|date:"M d, Y" }}</div>
+              <div class="small text-muted">{{ invitation.election.end_date|date:"H:i" }}</div>
+            </div>
+          </div>
+          
+          <!-- Invitation From -->
+          <div class="mb-4">
+            <small class="text-muted">Invited by</small>
+            <div class="fw-bold">{{ invitation.invited_by.get_full_name|default:invitation.invited_by.username }}</div>
+          </div>
+          
+          <!-- Personal Message -->
+          {% if invitation.message %}
+          <div class="alert alert-light mb-4">
+            <div class="small text-muted mb-1">Personal message:</div>
+            <div class="fst-italic">{{ invitation.message }}</div>
+          </div>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Response Buttons -->
+      <div class="card border-0">
+        <div class="card-header border-0 text-center">
+          <h5 class="card-title mb-0">Your Response</h5>
+        </div>
+        <div class="card-body">
+          <div class="row g-3">
+            <!-- Accept Button -->
+            <div class="col-md-6">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="response" value="accept">
+                <button type="submit" class="btn btn-success btn-lg w-100 h-100">
+                  <i class="bi bi-check-circle-fill me-2"></i>
+                  <div class="fw-bold">Accept</div>
+                  <div class="small mt-1">I want to participate</div>
+                </button>
+              </form>
+            </div>
+            
+            <!-- Decline Button -->
+            <div class="col-md-6">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="response" value="decline">
+                <button type="submit" class="btn btn-outline-danger btn-lg w-100 h-100">
+                  <i class="bi bi-x-circle me-2"></i>
+                  <div class="fw-bold">Decline</div>
+                  <div class="small mt-1">I cannot participate</div>
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Invitation Info -->
+      <div class="mt-4 text-center">
+        <small class="text-muted">
+          <i class="bi bi-clock me-1"></i>
+          This invitation expires on {{ invitation.expires_at|date:"M d, Y H:i" }}
+        </small>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

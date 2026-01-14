@@ -1,0 +1,45 @@
+{% load static %}
+<!-- Candidate Profile Card -->
+<div class="card border-0 position-relative h-100">
+  <div class="row g-0 h-100">
+    <div class="col-md-4 position-relative" style="min-height: 120px;">
+      {% if candidate.user.profile and candidate.user.profile.avatar %}
+        <img src="{{ candidate.user.profile.avatar.url }}" 
+             alt="{{ candidate.user.get_full_name }}" 
+             class="rounded-start position-absolute top-0 start-0" 
+             style="width: 100%; height: 100%; object-fit: cover;"
+             onerror="this.src='{% static 'app/images/default-avatar.svg' %}'">
+      {% elif candidate.symbol %}
+        <img src="{{ candidate.symbol.url }}" 
+             alt="{{ candidate.user.get_full_name }}" 
+             class="rounded-start position-absolute top-0 start-0" 
+             style="width: 100%; height: 100%; object-fit: cover;"
+             onerror="this.src='{% static 'app/images/default-avatar.svg' %}'">
+      {% else %}
+        <img src="{% static 'app/images/default-avatar.svg' %}" 
+             alt="{{ candidate.user.get_full_name }}" 
+             class="rounded-start position-absolute top-0 start-0" 
+             style="width: 100%; height: 100%; object-fit: cover;">
+      {% endif %}
+    </div>
+    <div class="col-md-8">
+      <div class="card-body">
+        <h5 class="card-title">
+          <a href="{% url 'candidate_detail' uuid=candidate.uuid %}" class="stretched-link text-decoration-none link-dark">{{ candidate.user.get_full_name }}</a>
+        </h5>
+        
+        {% if candidate.party %}
+          <p class="card-text text-truncate">{{ candidate.party.name }}</p>
+        {% else %}
+          <p class="card-text">Independent</p>
+        {% endif %}
+        
+        {% if candidate.user.profile and candidate.user.profile.location %}
+          <p class="card-text text-truncate">
+            <small class="text-body-secondary"><i class="bi bi-geo-alt me-1"></i>{{ candidate.user.profile.location }}</small>
+          </p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

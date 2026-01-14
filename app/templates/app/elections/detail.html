@@ -1,0 +1,300 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Election Header - Full Width -->
+<header class="bg-primary text-white py-4 mb-0">
+  <div class="container">
+    <header>
+      <h1 class="mb-0">{{ election.name }}</h1>
+      <p class="lead mb-0">{{ election.description }}</p>
+    </header>
+  </div>
+</header>
+
+{% include 'app/partials/breadcrumbs.html' %}
+
+<!-- Content Section -->
+<article class="container py-5">
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-md-9">
+
+{% if vote_results %}
+<div class="mb-5">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h3>Election Results</h3>
+      {% if election.closed_at %}
+        <small class="text-success">
+          <i class="bi bi-check-circle me-1"></i>
+          Results available - Election closed on {{ election.closed_at|date:"M d, Y H:i" }}
+        </small>
+      {% elif election.get_status == "closed" %}
+        <small class="">
+          <i class="bi bi-info-circle me-1"></i>
+          Results available - Voting period ended
+        </small>
+      {% endif %}
+    </div>
+    {% if election.decrypted_total %}
+      <button class="btn btn-outline-primary" hx-get="{% url 'verify_results' uuid=election.uuid %}" hx-target="#verification-results">
+        <i class="bi bi-shield-check me-2"></i>Verify Results
+      </button>
+    {% endif %}
+  </div>
+  
+  <div class="card border-0">
+    <div class="card-header border-0">
+      <h5 class="card-title mb-0">
+        <i class="bi bi-bar-chart me-2"></i>Election Results
+      </h5>
+    </div>
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <p class="mb-0"><strong>Total Votes Cast:</strong> {{ vote_results.total_votes }}</p>
+        {% if election.decrypted_total %}
+          <small class="text-muted">Decrypted Total: {{ election.decrypted_total }}</small>
+        {% endif %}
+      </div>
+      
+      {% for result in vote_results.results %}
+      <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div class="d-flex align-items-center">
+            <div class="me-3">
+              {% include 'app/partials/candidate_avatar.html' with candidate=result.candidate size=40 %}
+            </div>
+            <div>
+              <h6 class="mb-0">{{ result.candidate.user.get_full_name }}</h6>
+              {% if result.candidate.party %}
+                <small class="text-muted">{{ result.candidate.party.name }}</small>
+              {% endif %}
+            </div>
+          </div>
+          <div class="text-end">
+            <strong>{{ result.votes }} votes</strong>
+            <div><small class="text-muted">{{ result.percentage }}%</small></div>
+          </div>
+        </div>
+        <div class="progress" style="height: 8px;">
+          <div class="progress-bar {% if forloop.first %}bg-primary{% else %}bg-secondary{% endif %}" 
+               role="progressbar" 
+               style="width: {{ result.percentage }}%" 
+               aria-valuenow="{{ result.percentage }}" 
+               aria-valuemin="0" 
+               aria-valuemax="100">
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-muted">No votes were cast in this election.</p>
+      {% endfor %}
+      
+      <!-- Verification Results Section -->
+      {% if election.decrypted_total %}
+        <div id="verification-results" class="mt-4"></div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<!-- Candidates Section - Always Visible -->
+<div class="mb-5">
+  <div class="mb-4">
+    <h3>Candidates</h3>
+  </div>
+  
+  {% if election.candidates.all %}
+  <div class="row">
+    {% for candidate in election.candidates.all %}
+    <div class="col-md-4 mb-3">
+      {% include 'app/partials/candidate_card.html' with candidate=candidate election=election voted=voted %}
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="alert alert-info">
+      <i class="bi bi-info-circle me-2"></i>
+      <strong>No candidates yet.</strong> 
+      {% if can_edit %}
+        <a href="{% url 'add_candidate' uuid=election.uuid %}">Add the first candidate</a> to get started.
+      {% else %}
+        Candidates will be added by election officials.
+      {% endif %}
+    </div>
+  {% endif %}
+</div>
+
+    </div> <!-- End Main Content -->
+
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="sticky-top" style="top: 1rem;">
+        
+        <!-- Election Status Card -->
+        <div class="card border-0 mb-4">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-info-circle me-2"></i>Election Status
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="mb-3">
+              {% with status_info=election.get_status_display status=election.get_status %}
+                <span class="badge {{ status_info.class }}">{{ status_info.text }}</span>
+                {% if status == "closed" %}
+                  <div class="mt-2">
+                    <small class="text-success d-block">
+                      <i class="bi bi-check-circle me-1"></i>This election has been officially closed
+                      {% if election.closed_at %}
+                        <br><span class="text-muted">Closed on {{ election.closed_at|date:"M d, Y H:i" }}</span>
+                      {% endif %}
+                    </small>
+                  </div>
+                {% elif status == "expired" %}
+                  <div class="mt-2">
+                    <small class="text-danger d-block">
+                      <i class="bi bi-exclamation-triangle me-1"></i>Voting period ended - needs to be closed
+                    </small>
+                  </div>
+                {% elif election.active %}
+                  <div class="mt-2">
+                    <small class="text-info d-block">
+                      <i class="bi bi-play-circle me-1"></i>Election is active
+                      {% if election.started_at %}
+                        <br><span class="text-muted">Started on {{ election.started_at|date:"M d, Y H:i" }}</span>
+                      {% endif %}
+                    </small>
+                  </div>
+                {% else %}
+                  <div class="mt-2">
+                    <small class="text-muted d-block">
+                      <i class="bi bi-pause-circle me-1"></i>Election not yet started
+                      {% if election.started_at %}
+                        <br><span class="text-warning">Previously started on {{ election.started_at|date:"M d, Y H:i" }}</span>
+                      {% endif %}
+                    </small>
+                  </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+            <div class="mb-2">
+              <small class="text-muted d-block">Total Votes</small>
+              <strong class="h5">{{ election.votes.count }}</strong>
+            </div>
+            <div class="mb-2">
+              <small class="text-muted d-block">Candidates</small>
+              <strong class="h5">{{ election.candidates.count }}</strong>
+            </div>
+            <div class="mb-2">
+              <small class="text-muted d-block">Access Level</small>
+              <span class="badge {% if election.is_public %}bg-info{% else %}bg-warning{% endif %}">
+                <i class="bi {% if election.is_public %}bi-globe{% else %}bi-lock{% endif %} me-1"></i>
+                {{ election.get_privacy_display }}
+              </span>
+            </div>
+            {% if not election.is_public %}
+            <div class="mb-2">
+              <small class="text-muted d-block">Invitations</small>
+              <div>
+                <span class="text-success">{{ election.get_accepted_invitations_count }} accepted</span>
+                <span class="text-muted mx-1">•</span>
+                <span class="text-warning">{{ election.get_pending_invitations_count }} pending</span>
+              </div>
+            </div>
+            {% endif %}
+            <div class="mb-2">
+              <small class="text-muted d-block">Voting Period</small>
+              <span class="d-block">{{ election.start_date|date:"M d, Y H:i" }}</span>
+              <span class="text-muted">to {{ election.end_date|date:"M d, Y H:i" }}</span>
+            </div>
+            {% if election.created_by %}
+            <div>
+              <small class="text-muted d-block">Created By</small>
+              <span>{{ election.created_by.get_full_name|default:election.created_by.username }}</span>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Actions Card -->
+        {% if user.is_authenticated and user.is_superuser or user.is_staff or election.created_by == user %}
+        <div class="card border-0">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-gear me-2"></i>Actions
+            </h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              {% if election.closed_at %}
+              <!-- Show message for closed elections -->
+              <div class="alert alert-secondary mb-3">
+                <small>
+                  <i class="bi bi-lock me-1"></i>
+                  <strong>Election Closed:</strong> All editing actions are disabled once an election is closed.
+                </small>
+              </div>
+              {% endif %}
+              
+              <a href="{% url 'add_candidate' uuid=election.uuid %}" 
+                 class="btn btn-success {% if not can_edit %}disabled{% endif %}"
+                 {% if not can_edit %}aria-disabled="true" title="{% if election.closed_at %}Cannot add candidates - election is closed{% else %}Cannot add candidates during active voting period{% endif %}"{% endif %}>
+                <i class="bi bi-person-plus me-2"></i>Add Candidate
+              </a>
+              {% if not election.is_public %}
+              <a href="{% url 'manage_invitations' uuid=election.uuid %}" 
+                 class="btn btn-primary {% if not can_edit %}disabled{% endif %}"
+                 {% if not can_edit %}aria-disabled="true" title="{% if election.closed_at %}Cannot manage invitations - election is closed{% else %}Cannot manage invitations during active voting period{% endif %}"{% endif %}>
+                <i class="bi bi-people me-2"></i>Manage Invitations ({{ election.invitations.count }})
+              </a>
+              {% endif %}
+              <a href="{% url 'edit_election' uuid=election.uuid %}" 
+                 class="btn btn-outline-secondary {% if not can_edit %}disabled{% endif %}"
+                 {% if not can_edit %}aria-disabled="true" title="{% if election.closed_at %}Cannot edit election - election is closed{% else %}Cannot edit election during active voting period{% endif %}"{% endif %}>
+                <i class="bi bi-pencil-square me-2"></i>Edit Election
+              </a>
+              {% with status=election.get_status %}
+                {% if election.can_be_closed %}
+                  <form method="post" action="{% url 'close_election' uuid=election.uuid %}" onsubmit="return confirm('Are you sure you want to close this election? This action cannot be undone.');" class="d-grid">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">
+                      <i class="bi bi-stop-circle me-2"></i>
+                      {% if status == "open" %}Close Election Early{% else %}Close Election{% endif %}
+                    </button>
+                  </form>
+                {% elif election.can_be_started %}
+                  <form method="post" action="{% url 'start_election' uuid=election.uuid %}" onsubmit="return confirm('Are you sure you want to start this election?');" class="d-grid">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-success">
+                      <i class="bi bi-play-circle me-2"></i>Start Election
+                    </button>
+                  </form>
+                {% elif election.started_at and election.closed_at %}
+                  <div class="alert alert-info mb-0">
+                    <small>
+                      <i class="bi bi-info-circle me-1"></i>
+                      Election completed (started: {{ election.started_at|date:"M d, H:i" }}, closed: {{ election.closed_at|date:"M d, H:i" }})
+                    </small>
+                  </div>
+                {% elif election.started_at %}
+                  <div class="alert alert-warning mb-0">
+                    <small>
+                      <i class="bi bi-exclamation-triangle me-1"></i>
+                      Election was already started on {{ election.started_at|date:"M d, Y H:i" }}
+                    </small>
+                  </div>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+
+  </div> <!-- End Row -->
+</article> <!-- End Container -->
+{% endblock %}

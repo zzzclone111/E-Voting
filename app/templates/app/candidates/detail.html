@@ -1,0 +1,211 @@
+{% extends 'app/layouts/page.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="bg-primary text-white py-4 mb-0">
+  <div class="container">
+    <h1 class="mb-0">{{ candidate.user.get_full_name }}</h1>
+    <p class="mb-0 lead">Candidate Profile</p>
+  </div>
+</header>
+
+{% include 'app/partials/breadcrumbs.html' %}
+
+<!-- Content Section -->
+<article class="container py-5">
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-md-9">
+      <div class="card border-0">
+        <div class="row g-0">
+          <div class="col-md-4">
+            {% if candidate.user.profile and candidate.user.profile.avatar %}
+              <img src="{{ candidate.user.profile.avatar.url }}" 
+                   alt="{{ candidate.user.get_full_name }}" 
+                   class="img-fluid rounded-start h-100" 
+                   style="object-fit: cover; min-height: 300px;"
+                   onerror="this.src='{% static 'app/images/default-avatar.svg' %}'">
+            {% elif candidate.symbol %}
+              <img src="{{ candidate.symbol.url }}" 
+                   alt="{{ candidate.user.get_full_name }}" 
+                   class="img-fluid rounded-start h-100" 
+                   style="object-fit: cover; min-height: 300px;"
+                   onerror="this.src='{% static 'app/images/default-avatar.svg' %}'">
+            {% else %}
+              <img src="{% static 'app/images/default-avatar.svg' %}" 
+                   alt="{{ candidate.user.get_full_name }}" 
+                   class="img-fluid rounded-start h-100" 
+                   style="object-fit: cover; min-height: 300px;">
+            {% endif %}
+          </div>
+          <div class="col-md-8">
+            <div class="card-body">
+              <h2 class="card-title">{{ candidate.user.get_full_name }}</h2>
+              
+              <!-- Personal Information -->
+              {% if candidate.user.profile %}
+                {% if candidate.user.profile.gender %}
+                  <p class="card-text">
+                    <strong>Gender:</strong> {{ candidate.user.profile.get_gender_display }}
+                  </p>
+                {% endif %}
+                
+                {% if candidate.user.profile.location %}
+                  <p class="card-text">
+                    <strong>Location:</strong> <i class="bi bi-geo-alt me-1"></i>{{ candidate.user.profile.location }}
+                  </p>
+                {% endif %}
+              {% endif %}
+              
+              {% if candidate.party %}
+                <p class="card-text">
+                  <strong>Party:</strong> {{ candidate.party.name }}
+                </p>
+              {% else %}
+                <p class="card-text">
+                  <span class="badge bg-secondary">Independent</span>
+                </p>
+              {% endif %}
+              
+              <p class="card-text">
+                <strong>Election:</strong> 
+                <a href="{% url 'election_detail' uuid=election.uuid %}" class="text-decoration-none">{{ election.name }}</a>
+              </p>
+              
+              {% if candidate.user.email %}
+                <p class="card-text">
+                  <strong>Email:</strong> {{ candidate.user.email }}
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Profile Bio Section -->
+      {% if candidate.user.profile and candidate.user.profile.profile %}
+        <div class="card border-0 mt-4">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0"><i class="bi bi-person-badge me-2"></i>Background & Qualifications</h5>
+          </div>
+          <div class="card-body">
+            <p class="mb-0">{{ candidate.user.profile.profile|linebreaks }}</p>
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Manifesto Section -->
+      {% if candidate.user.profile and candidate.user.profile.manifesto %}
+        <div class="card border-0 mt-4">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0"><i class="bi bi-file-text me-2"></i>Policy Positions & Campaign Promises</h5>
+          </div>
+          <div class="card-body">
+            <p class="mb-0">{{ candidate.user.profile.manifesto|linebreaks }}</p>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <!-- Election Status Card -->
+      <div class="card border-0 mb-4">
+        <div class="card-header border-0">
+          <h5 class="card-title mb-0"><i class="bi bi-info-circle me-2"></i>Election Status</h5>
+        </div>
+        <div class="card-body">
+          {% if election.is_voting_open %}
+            <div class="alert alert-success mb-3">
+              <i class="bi bi-check-circle me-2"></i>Voting is currently open
+            </div>
+          {% elif election.active %}
+            <div class="alert alert-warning mb-3">
+              <i class="bi bi-clock me-2"></i>Election is active but voting hasn't started
+            </div>
+          {% else %}
+            <div class="alert alert-secondary mb-3">
+              <i class="bi bi-pause-circle me-2"></i>Election is inactive
+            </div>
+          {% endif %}
+          
+          <div class="mb-2">
+            <strong>Voting Period:</strong><br>
+            <small class="text-muted">
+              {{ election.start_date|date:"M d, Y" }} - {{ election.end_date|date:"M d, Y" }}
+            </small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Vote Action Card -->
+      {% if election.is_voting_open %}
+        <div class="card border-0 mb-4">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0"><i class="bi bi-ballot me-2"></i>Cast Your Vote</h5>
+          </div>
+          <div class="card-body text-center">
+            {% if user.is_authenticated %}
+              {% if not voted %}
+                <a class="btn btn-primary btn-lg w-100" href="{% url 'vote' uuid=candidate.uuid %}">
+                  <i class="bi bi-check-circle me-2"></i>Vote for {{ candidate.user.get_full_name }}
+                </a>
+              {% else %}
+                <div class="alert alert-info mb-0">
+                  <i class="bi bi-check-circle-fill me-2"></i>You have already voted in this election
+                </div>
+              {% endif %}
+            {% else %}
+              <a class="btn btn-outline-primary btn-lg w-100" href="{% url 'login' %}?next={% url 'vote' uuid=candidate.uuid %}">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Login to Vote
+              </a>
+              <div class="mt-2">
+                <small class="text-muted">
+                  <i class="bi bi-info-circle me-1"></i>You need to login to participate in this election
+                </small>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+
+      <!-- Management Actions Card -->
+      {% if can_remove_candidate and election.is_editable %}
+        <div class="card border-0">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0"><i class="bi bi-gear me-2"></i>Manage Candidate</h5>
+          </div>
+          <div class="card-body">
+            <div class="d-grid gap-2">
+              <a href="{% url 'edit_candidate' uuid=candidate.uuid %}" class="btn btn-outline-secondary">
+                <i class="bi bi-pencil-square me-2"></i>Edit Candidate
+              </a>
+              <a href="{% url 'delete_candidate' uuid=candidate.uuid %}" class="btn btn-outline-danger">
+                <i class="bi bi-trash me-2"></i>Remove from Election
+              </a>
+            </div>
+            <hr>
+            <div class="text-muted small">
+              <i class="bi bi-info-circle me-1"></i>
+              You can manage this candidate because you are the election owner.
+            </div>
+          </div>
+        </div>
+      {% elif can_remove_candidate and not election.is_editable %}
+        <div class="card border-0">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0"><i class="bi bi-lock me-2"></i>Election Locked</h5>
+          </div>
+          <div class="card-body">
+            <div class="alert alert-warning mb-0">
+              <i class="bi bi-exclamation-triangle me-2"></i>
+              <strong>Cannot modify candidates:</strong> The election has already started or voting is in progress.
+            </div>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</article>
+{% endblock %}

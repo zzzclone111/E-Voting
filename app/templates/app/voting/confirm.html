@@ -1,0 +1,102 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Page Header -->
+<header class="bg-primary text-white py-4 mb-0">
+  <div class="container">
+    <h1 class="mb-0">Confirm Your Vote</h1>
+    <p class="mb-0 lead">Please review your selection before casting your vote</p>
+  </div>
+</header>
+
+{% include 'app/partials/breadcrumbs.html' %}
+
+<!-- Content Section -->
+<article class="container py-5">
+      <form method="post">
+        {% csrf_token %}
+        <div class="card border-0">
+          <div class="card-header border-0">
+            <h5 class="card-title mb-0">
+              <i class="bi bi-ballot-check me-2"></i>Vote Confirmation
+            </h5>
+          </div>
+          <div class="card-body">
+            <!-- Election Information -->
+            <div class="alert alert-info">
+              <h6 class="alert-heading">
+                <i class="bi bi-info-circle me-2"></i>Election Details
+              </h6>
+              <p class="mb-2"><strong>{{ election.name }}</strong></p>
+              <p class="mb-2">{{ election.description }}</p>
+              <small class="text-muted">
+                <i class="bi bi-calendar me-1"></i>
+                Voting ends: {{ election.end_date|date:"M d, Y H:i" }}
+              </small>
+            </div>
+            
+            <!-- Candidate Information -->
+            <div class="row mb-4">
+              <div class="col-md-4 text-center">
+                {% include 'app/partials/candidate_avatar.html' with candidate=candidate size=120 shape="square" css_classes="mb-3" %}
+              </div>
+              <div class="col-md-8">
+                <h3 class="mb-3">{{ candidate.user.get_full_name }}</h3>
+                
+                {% if candidate.party %}
+                  <p class="mb-2">
+                    <i class="bi bi-flag me-1"></i>
+                    <strong>Party:</strong> {{ candidate.party.name }}
+                  </p>
+                {% else %}
+                  <p class="mb-2">
+                    <i class="bi bi-person me-1"></i>
+                    <strong>Independent Candidate</strong>
+                  </p>
+                {% endif %}
+                
+                {% if candidate.user.profile %}
+                  {% if candidate.user.profile.location %}
+                    <p class="mb-2">
+                      <i class="bi bi-geo-alt me-1"></i>
+                      <strong>Location:</strong> {{ candidate.user.profile.location }}
+                    </p>
+                  {% endif %}
+                  
+                  {% if candidate.user.profile.profile %}
+                    <p class="mb-0">
+                      <i class="bi bi-person-lines-fill me-1"></i>
+                      <strong>Profile:</strong> {{ candidate.user.profile.profile|truncatewords:30 }}
+                    </p>
+                  {% endif %}
+                {% endif %}
+              </div>
+            </div>
+            
+            <!-- Voting Warning -->
+            <div class="alert alert-warning">
+              <h6 class="alert-heading">
+                <i class="bi bi-exclamation-triangle me-2"></i>Important Notice
+              </h6>
+              <ul class="mb-0">
+                <li>Your vote is <strong>secret and secure</strong> - no one can see who you voted for</li>
+                <li>Once cast, <strong>your vote cannot be changed</strong></li>
+                <li>You can only vote <strong>once per election</strong></li>
+                <li>Your vote will be encrypted and stored securely</li>
+              </ul>
+            </div>
+          </div>
+          <div class="card-footer border-0 bg-transparent">
+            <div class="d-flex gap-3 justify-content-between">
+              <a href="{% url 'candidate_detail' uuid=candidate.uuid %}" class="btn btn-secondary">
+                Back to Candidate
+              </a>
+              <button type="submit" class="btn btn-success">
+                Cast My Vote
+              </button>
+            </div>
+          </div>
+        </div>
+      </form>
+</article>
+{% endblock %}

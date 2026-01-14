@@ -1,0 +1,103 @@
+{% extends "app/layouts/base.html" %}
+{% load i18n %}
+
+{% block title %}Verify Your Email - Intikhab{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="bg-primary text-white py-4">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="mb-0">
+                                <i class="bi bi-envelope-check me-3"></i>
+                                Email Verification Required
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-envelope-exclamation text-warning" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h2 class="mb-4">Check Your Email</h2>
+                    
+                    <p class="lead mb-4">
+                        We've sent a verification email to <strong>{{ user.email }}</strong>
+                    </p>
+                    
+                    <div class="alert alert-info" role="alert">
+                        <i class="bi bi-info-circle me-2"></i>
+                        <strong>Next Steps:</strong>
+                        <ol class="mb-0 mt-2 text-start">
+                            <li>Check your email inbox (and spam folder)</li>
+                            <li>Click the verification link in the email</li>
+                            <li>Return here to start voting!</li>
+                        </ol>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <p class="text-muted">
+                            <i class="bi bi-clock me-1"></i>
+                            Didn't receive the email? It may take a few minutes to arrive.
+                        </p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'account_email' %}" class="btn btn-outline-success btn-lg">
+                            <i class="bi bi-arrow-clockwise me-2"></i>
+                            Resend Verification Email
+                        </a>
+                        
+                        <a href="{% url 'account_login' %}" class="btn btn-link">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Back to Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-success">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-shield-check me-2"></i>
+                        Why Email Verification?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <strong>Security:</strong> Protects your account from unauthorized access
+                    </p>
+                    <p class="mb-2">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <strong>Communication:</strong> Ensures you receive important election updates
+                    </p>
+                    <p class="mb-0">
+                        <i class="bi bi-check-circle text-success me-2"></i>
+                        <strong>Trust:</strong> Maintains the integrity of our voting system
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

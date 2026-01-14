@@ -1,0 +1,27 @@
+/* Custom theme variables - Override Bootstrap primary color with green */
+:root {
+  --bs-primary: #198754;
+  --bs-primary-rgb: 25, 135, 84;
+  --bs-primary-text-emphasis: #1d5629;
+  --bs-primary-bg-subtle: #d1e7dd;
+  --bs-primary-border-subtle: #a3cfbb;
+}
+
+/* Direct override for primary buttons to ensure green color */
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: #198754;
+  --bs-btn-border-color: #198754;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #157347;
+  --bs-btn-hover-border-color: #146c43;
+  --bs-btn-focus-shadow-rgb: 25, 135, 84;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #146c43;
+  --bs-btn-active-border-color: #13653f;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: #198754;
+  --bs-btn-disabled-border-color: #198754;
+}
+
+html, body { height: 100vh; }

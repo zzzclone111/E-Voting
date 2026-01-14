@@ -1,0 +1,88 @@
+{% load static %}
+
+<nav aria-label="breadcrumb" class="bg-light">
+  <div class="container">
+    <ol class="breadcrumb py-3 mb-0">
+      <li class="breadcrumb-item">
+        <a href="{% url 'index' %}" class="text-decoration-none text-dark">Home</a>
+      </li>
+      
+      {% comment %}
+      Parse the current URL path to create dynamic breadcrumbs
+      Examples:
+      /elections/ -> Home > Elections
+      /elections/1/ -> Home > Elections > Election Name
+      /elections/create/ -> Home > Elections > Create Election
+      /elections/1/edit/ -> Home > Elections > Election Name > Edit
+      /candidates/create/ -> Home > Elections > Election Name > Add Candidate
+      /legal/terms/ -> Home > Legal > Terms of Service
+      {% endcomment %}
+      
+      {% with path_parts=request.resolver_match.url_name %}
+        {% if 'election' in request.path %}
+          <li class="breadcrumb-item">
+            <a href="{% url 'election_list' %}" class="text-decoration-none text-dark">Elections</a>
+          </li>
+          
+          {% if 'create' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Create Election</li>
+          {% elif election %}
+            <li class="breadcrumb-item">
+              <a href="{% url 'election_detail' uuid=election.uuid %}" class="text-decoration-none text-dark">{{ election.name|truncatechars:30 }}</a>
+            </li>
+            {% if 'edit' in request.path %}
+              <li class="breadcrumb-item active" aria-current="page">Edit</li>
+            {% elif 'invitation' in request.path %}
+              {% if 'send' in request.path %}
+                <li class="breadcrumb-item active" aria-current="page">Send Invitations</li>
+              {% else %}
+                <li class="breadcrumb-item active" aria-current="page">Manage Invitations</li>
+              {% endif %}
+            {% endif %}
+          {% elif 'list' in request.path or request.path == '/elections/' %}
+            <li class="breadcrumb-item active" aria-current="page">All Elections</li>
+          {% endif %}
+          
+        {% elif 'candidate' in request.path %}
+          {% if election %}
+            <li class="breadcrumb-item">
+              <a href="{% url 'election_list' %}" class="text-decoration-none text-dark">Elections</a>
+            </li>
+            <li class="breadcrumb-item">
+              <a href="{% url 'election_detail' uuid=election.uuid %}" class="text-decoration-none text-dark">{{ election.name|truncatechars:30 }}</a>
+            </li>
+            {% if 'create' in request.path %}
+              <li class="breadcrumb-item active" aria-current="page">Add Candidate</li>
+            {% elif candidate %}
+              <li class="breadcrumb-item active" aria-current="page">{{ candidate.user.get_full_name|truncatechars:25 }}</li>
+            {% endif %}
+          {% endif %}
+          
+        {% elif 'legal' in request.path %}
+          <li class="breadcrumb-item">
+            <a href="#" class="text-decoration-none text-dark">Legal</a>
+          </li>
+          {% if 'terms' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Terms of Service</li>
+          {% elif 'privacy' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Privacy Policy</li>
+          {% elif 'accessibility' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Accessibility</li>
+          {% elif 'contact' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">Contact</li>
+          {% elif 'faqs' in request.path %}
+            <li class="breadcrumb-item active" aria-current="page">FAQs</li>
+          {% endif %}
+          
+        {% elif 'profile' in request.path %}
+          <li class="breadcrumb-item active" aria-current="page">Profile</li>
+          
+        {% elif request.path == '/' %}
+          {# Home page - no additional breadcrumbs #}
+        {% else %}
+          <li class="breadcrumb-item active" aria-current="page">{{ request.resolver_match.url_name|title }}</li>
+        {% endif %}
+      {% endwith %}
+    </ol>
+  </div>
+</nav>

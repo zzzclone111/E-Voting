@@ -1,0 +1,96 @@
+{% extends "app/layouts/base.html" %}
+{% load i18n %}
+
+{% block title %}Confirm Email - Intikhab{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="bg-primary text-white py-4">
+                <div class="container">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h1 class="mb-0">
+                                <i class="bi bi-envelope-check me-3"></i>
+                                Confirm Your Email
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-0">
+                <div class="card-body p-5 text-center">
+                    <div class="mb-4">
+                        <i class="bi bi-envelope-check-fill text-success" style="font-size: 4rem;"></i>
+                    </div>
+                    
+                    <h2 class="mb-4">Confirm Your Email Address</h2>
+                    
+                    <p class="lead mb-4">
+                        Please confirm that <strong>{{ confirmation.email_address.email }}</strong> is your email address.
+                    </p>
+                    
+                    <div class="alert alert-warning" role="alert">
+                        <i class="bi bi-exclamation-triangle me-2"></i>
+                        <strong>Important:</strong> You must confirm your email to access voting features.
+                    </div>
+                    
+                    <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-success btn-lg">
+                                <i class="bi bi-check-circle me-2"></i>
+                                Confirm Email Address
+                            </button>
+                        </div>
+                    </form>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'account_login' %}" class="btn btn-link">
+                            <i class="bi bi-arrow-left me-2"></i>
+                            Back to Login
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card border-info">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="bi bi-info-circle me-2"></i>
+                        What Happens Next?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-2">
+                        <i class="bi bi-1-circle text-info me-2"></i>
+                        Your email will be verified and marked as confirmed
+                    </p>
+                    <p class="mb-2">
+                        <i class="bi bi-2-circle text-info me-2"></i>
+                        You'll be automatically logged into your account
+                    </p>
+                    <p class="mb-0">
+                        <i class="bi bi-3-circle text-info me-2"></i>
+                        You can start participating in elections immediately!
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

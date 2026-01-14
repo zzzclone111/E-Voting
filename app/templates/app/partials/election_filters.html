@@ -1,0 +1,80 @@
+{% comment %}
+Reusable election filters form partial
+
+Usage:
+{% include 'app/partials/election_filters.html' %}
+
+Required context variables:
+- elections_count: Dict with ongoing, upcoming, recently_closed, total counts
+- selected_status: Currently selected status filter
+- search_term: Current search term
+- selected_date_range: Currently selected date range
+
+Optional parameters:
+- form_action: URL for form submission (default: election_list)
+- card_classes: Additional CSS classes for the filter card
+{% endcomment %}
+
+<div class="card border-0 bg-light">
+  <div class="card-header border-0">
+    <h5 class="card-title mb-0">
+      <i class="bi bi-funnel me-2"></i>Filter Elections
+    </h5>
+  </div>
+  <div class="card-body">
+    <form method="get" action="{% if form_action %}{{ form_action }}{% else %}{% url 'election_list' %}{% endif %}">
+      <!-- Status Filter -->
+      <div class="mb-4">
+        <h6 class="">Status</h6>
+        <select class="form-select form-select-sm" name="status">
+          <option value="all" {% if selected_status == 'all' %}selected{% endif %}>
+            All Status ({{ elections_count.total }})
+          </option>
+          <option value="ongoing" {% if selected_status == 'ongoing' %}selected{% endif %}>
+            Ongoing ({{ elections_count.ongoing }})
+          </option>
+          <option value="upcoming" {% if selected_status == 'upcoming' %}selected{% endif %}>
+            Upcoming ({{ elections_count.upcoming }})
+          </option>
+          <option value="closed" {% if selected_status == 'closed' %}selected{% endif %}>
+            Recently Closed ({{ elections_count.recently_closed }})
+          </option>
+        </select>
+      </div>
+
+      <!-- Search Filter -->
+      <div class="mb-4">
+        <h6 class="">Search</h6>
+        <div class="input-group input-group-sm">
+          <span class="input-group-text">
+            <i class="bi bi-search"></i>
+          </span>
+          <input type="text" class="form-control" name="search" 
+                 value="{{ search_term }}" placeholder="Search elections...">
+        </div>
+      </div>
+
+      <!-- Date Range Filter -->
+      <div class="mb-4">
+        <h6 class="">Date Range</h6>
+        <select class="form-select form-select-sm" name="date_range">
+          <option value="all" {% if selected_date_range == 'all' %}selected{% endif %}>All Time</option>
+          <option value="this-week" {% if selected_date_range == 'this-week' %}selected{% endif %}>This Week</option>
+          <option value="this-month" {% if selected_date_range == 'this-month' %}selected{% endif %}>This Month</option>
+          <option value="next-month" {% if selected_date_range == 'next-month' %}selected{% endif %}>Next Month</option>
+          <option value="last-month" {% if selected_date_range == 'last-month' %}selected{% endif %}>Last Month</option>
+        </select>
+      </div>
+
+      <!-- Filter Actions -->
+      <div class="d-grid gap-2">
+        <button type="submit" class="btn btn-success btn-sm">
+          <i class="bi bi-funnel me-1"></i>Apply Filters
+        </button>
+        <a href="{% if form_action %}{{ form_action }}{% else %}{% url 'election_list' %}{% endif %}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-clockwise me-1"></i>Clear Filters
+        </a>
+      </div>
+    </form>
+  </div>
+</div>

@@ -1,0 +1,73 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Header Section -->
+<header class="bg-primary text-dark py-4 mb-0">
+  <div class="container">
+    <div class="text-center">
+      <h1 class="mb-0">Invitation Expired</h1>
+      <p class="lead mb-0">This invitation is no longer valid</p>
+    </div>
+  </div>
+</header>
+
+<!-- Content Section -->
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6">
+      
+      <!-- Expired Message Card -->
+      <div class="card border-0 text-center">
+        <div class="card-body">
+          <div class="mb-4">
+            <i class="bi bi-clock-history display-1 text-warning"></i>
+          </div>
+          
+          <h2 class="card-title mb-3">{{ invitation.election.name }}</h2>
+          
+          <div class="alert alert-warning">
+            <h5 class="alert-heading">
+              <i class="bi bi-exclamation-triangle me-2"></i>Invitation Expired
+            </h5>
+            <p class="mb-0">
+              {{ error|default:"This invitation has expired and can no longer be used to participate in the election." }}
+            </p>
+          </div>
+          
+          <!-- Invitation Details -->
+          <div class="row text-muted mb-4">
+            <div class="col-md-6">
+              <small>Invited by:</small>
+              <div>{{ invitation.invited_by.get_full_name|default:invitation.invited_by.username }}</div>
+            </div>
+            <div class="col-md-6">
+              <small>Expired on:</small>
+              <div>{{ invitation.expires_at|date:"M d, Y H:i" }}</div>
+            </div>
+          </div>
+          
+          <!-- Action Buttons -->
+          <div class="d-grid gap-2">
+            {% if invitation.election.is_voting_open %}
+              <div class="alert alert-info">
+                <small>
+                  <i class="bi bi-info-circle me-1"></i>
+                  If you still want to participate, please contact the election organizer for a new invitation.
+                </small>
+              </div>
+            {% endif %}
+            
+            <a href="{% url 'election_detail' uuid=invitation.election.uuid %}" class="btn btn-primary">
+              <i class="bi bi-eye me-2"></i>View Election Details
+            </a>
+            <a href="{% url 'election_list' %}" class="btn btn-outline-secondary">
+              <i class="bi bi-list me-2"></i>Browse All Elections
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,85 @@
+<div class="card border-0 bg-light">
+  <div class="card-header border-0">
+    <div class="d-flex justify-content-between align-items-start">
+      <h5 class="card-title mb-0">
+        <a href="{% url 'election_detail' election.uuid %}" class="stretched-link text-decoration-none link-dark">{{ election.name }}</a>
+      </h5>
+      <div>
+        {% if not election.is_public %}
+          <span class="text-secondary">
+            <i class="bi bi-lock"></i>
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <div class="card-body">
+    <!-- Featured Candidates -->
+    {% load static %}
+    <div class="row g-3">
+      {% for candidate in election.candidates.all|slice:":3" %}
+        <div class="col-4">
+          <div class="card border-0 text-bg-dark" style="height: 120px;">
+            {% if candidate.user.profile and candidate.user.profile.avatar %}
+              <img src="{{ candidate.user.profile.avatar.url }}" 
+                   class="card-img" 
+                   alt="{{ candidate.user.get_full_name }}"
+                   style="height: 120px; object-fit: cover;"
+                   onerror="this.src='{% static 'app/images/default-avatar.svg' %}'">
+            {% elif candidate.symbol %}
+              <img src="{{ candidate.symbol.url }}" 
+                   class="card-img" 
+                   alt="{{ candidate.user.get_full_name }}"
+                   style="height: 120px; object-fit: cover;"
+                   onerror="this.src='{% static 'app/images/default-avatar.svg' %}'">
+            {% else %}
+              <div class="card-img" 
+                   style="height: 120px; background: linear-gradient(135deg, #6c757d 0%, #495057 100%);">
+              </div>
+            {% endif %}
+            
+            <div class="card-img-overlay d-flex align-items-end p-0">
+              <div class="w-100 p-2 rounded-bottom" style="background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0) 100%);">
+                <h6 class="card-title text-white mb-0 text-truncate">{{ candidate.user.get_full_name }}</h6>
+                {% if candidate.party %}
+                  <small class="text-white text-truncate d-block">{{ candidate.party.name }}</small>
+                {% else %}
+                  <small class="text-white">Independent</small>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <div class="col-12 text-center text-muted">
+          <small>No candidates yet</small>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+{% load time_filters %}
+  <div class="card-footer border-0">
+    <div class="d-flex justify-content-between align-items-center">
+      <div class="d-flex align-items-center gap-2">
+        {% with status_info=election.get_status_display %}
+          <span class="badge {{ status_info.class }}">{{ status_info.text }}</span>
+        {% endwith %}
+      </div>
+      <div class="text-secondary">
+        {% if election.get_status == 'open' %}
+          <small>
+            {{ election.end_date|timeuntil_short }} left
+          </small>
+        {% elif election.get_status == 'scheduled' or election.get_status == 'inactive' %}
+          <small>
+            Starts in {{ election.start_date|timeuntil_short }}
+          </small>
+        {% elif election.get_status == 'closed' or election.get_status == 'expired' %}
+          <small>
+            {{ election.end_date|timesince_short }} ago
+          </small>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>

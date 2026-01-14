@@ -1,0 +1,9 @@
+{% extends 'app/layouts/base.html' %}
+
+{% block page %}
+{% include 'app/partials/navbar.html' %}
+<main class="bg-primary-subtle">
+{% block content %}{% endblock %}
+</main>
+{% include 'app/partials/footer.html' %}
+{% endblock %}

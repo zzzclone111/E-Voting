@@ -1,0 +1,184 @@
+{% extends 'app/layouts/page.html' %}
+
+{% block content %}
+<!-- Profile Header - Full Width -->
+<header class="bg-primary text-white py-4 mb-0">
+  <div class="container">
+    <header>
+      <h1 class="mb-0">{{ request.user.get_full_name|default:request.user.username }}</h1>
+      <p class="lead mb-0">Your personal voting dashboard and election history</p>
+    </header>
+  </div>
+</header>
+
+{% include 'app/partials/breadcrumbs.html' %}
+
+<!-- Profile Content Section -->
+<article class="container py-5">
+  <div class="row">
+    <!-- Main Content -->
+    <div class="col-md-9">
+      <!-- Voting History Section -->
+      <div class="card border-0 mb-4">
+        <div class="card-header border-0">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-ballot-check me-2"></i>Voting History
+          </h5>
+        </div>
+        <div class="card-body">
+          {% if votes %}
+            <p class="lead">You have voted in {{ votes.count }} election{{ votes.count|pluralize }}:</p>
+            <div class="list-group">
+              {% for vote in votes %}
+              <div class="list-group-item d-flex justify-content-between align-items-center">
+                <div>
+                  <h6 class="mb-1">{{ vote.election.name }}</h6>
+                  <small>Voted on {{ vote.created|date:"M d, Y H:i" }}</small>
+                </div>
+                <a href="{% url 'election_detail' uuid=vote.election.uuid %}" class="btn btn-sm btn-outline-primary">View Election</a>
+              </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted">You haven't voted in any elections yet.</p>
+            <a href="{% url 'election_list' %}" class="btn btn-success">Browse Elections</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Election Invitations Section -->
+      {% if invitations %}
+      <div class="card border-0 mb-4">
+        <div class="card-header border-0">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-envelope-paper me-2"></i>Election Invitations
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Invitations List -->
+          <div class="list-group">
+            {% for invitation in invitations %}
+            <div class="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="mb-1">{{ invitation.election.name }}</h6>
+                <small class="text-muted">
+                  Invited {{ invitation.created|date:"M d, Y" }} • 
+                  Election: {{ invitation.election.start_date|date:"M d, Y" }} - {{ invitation.election.end_date|date:"M d, Y" }}
+                </small>
+                <div class="mt-1">
+                  {% if invitation.status == 'pending' %}
+                    <span class="badge bg-warning">Pending Response</span>
+                  {% elif invitation.status == 'accepted' %}
+                    <span class="badge bg-success">Accepted</span>
+                  {% elif invitation.status == 'declined' %}
+                    <span class="badge bg-secondary">Declined</span>
+                  {% endif %}
+                  
+                  {% if invitation.is_expired %}
+                    <span class="badge bg-danger ms-1">Expired</span>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="btn-group" role="group">
+                <a href="{% url 'election_detail' uuid=invitation.election.uuid %}" class="btn btn-primary">
+                  View Election
+                </a>
+                {% if invitation.status == 'pending' and invitation.can_accept %}
+                  <a href="{% url 'invitation_accept' uuid=invitation.invitation_token %}" class="btn btn-primary">
+                    Respond
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- My Elections Section -->
+      {% if created_elections %}
+      <div class="card border-0">
+        <div class="card-header border-0 d-flex justify-content-between align-items-center">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-kanban me-2"></i>My Elections
+          </h5>
+          {% if request.user.is_election_creator %}
+          <a href="{% url 'create_election' %}" class="btn btn-sm btn-success">
+            <i class="bi bi-plus-circle me-1"></i>Create New Election
+          </a>
+          {% endif %}
+        </div>
+        <div class="card-body">
+          <p class="lead">You have created {{ created_elections.count }} election{{ created_elections.count|pluralize }}:</p>
+          <div class="row">
+            {% for election in created_elections %}
+              <div class="col-md-6 mb-3">
+                {% include 'app/partials/election_card.html' %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-md-3">
+      <div class="card border-0 sticky-top" style="top: 1rem;">
+        <div class="card-header border-0">
+          <h5 class="card-title mb-0">
+            <i class="bi bi-person-circle me-2"></i>User Information
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="text-center mb-3">
+            <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2" style="width: 60px; height: 60px;">
+              <i class="bi bi-person-fill text-white" style="font-size: 1.5rem;"></i>
+            </div>
+            <h6 class="mb-0">{{ request.user.get_full_name|default:request.user.username }}</h6>
+          </div>
+          
+          <div class="mb-3">
+            <small class="text-muted d-block">Username</small>
+            <strong>{{ request.user.username }}</strong>
+          </div>
+          
+          <div class="mb-3">
+            <small class="text-muted d-block">Email</small>
+            <strong>{{ request.user.email|default:"Not provided" }}</strong>
+          </div>
+          
+          <div class="mb-3">
+            <small class="text-muted d-block">Member Since</small>
+            <strong>{{ request.user.date_joined|date:"M d, Y" }}</strong>
+          </div>
+          
+          <hr>
+          
+          <div class="text-center">
+            <div class="row text-center">
+              <div class="col-4">
+                <div class="border-end">
+                  <div class="h5 mb-0">{{ votes.count }}</div>
+                  <small class="text-muted">Vote{{ votes.count|pluralize }}</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="border-end">
+                  <div class="h5 mb-0">{{ created_elections.count|default:0 }}</div>
+                  <small class="text-muted">Election{{ created_elections.count|pluralize }}</small>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="h5 mb-0">{{ invitation_counts.total|default:0 }}</div>
+                <small class="text-muted">Invitation{{ invitation_counts.total|pluralize }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+{% endblock %}
