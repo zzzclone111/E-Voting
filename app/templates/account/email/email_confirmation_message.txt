@@ -2,7 +2,7 @@
 {% autoescape off %}
 Hi {{ user.get_full_name|default:user.username }},
 
-Welcome to Intikhab - Pakistan's Electronic Voting System!
+Welcome to Electronic Voting System!
 
 You're receiving this email because you created an account at {{ current_site.name }}.
 
@@ -12,17 +12,15 @@ To complete your registration and activate your account, please click the link b
 
 This verification link will expire in {{ expiration_days }} days.
 
-About Intikhab:
+About this system:
 🗳️ Secure and transparent electronic voting
 🔒 Privacy-protected ballots with encryption
-🇵🇰 Built for Pakistan's democratic future
 👥 Trusted by citizens nationwide
 
 If you didn't create this account, please ignore this email.
 
 Best regards,
-The Intikhab Team
-Code for Pakistan
+E-Voting
 
 ---
 This is an automated message. Please do not reply to this email.

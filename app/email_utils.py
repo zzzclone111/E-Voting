@@ -1,8 +1,3 @@
-"""
-Email utilities for the Intikhab election system.
-Provides functions for sending various types of emails using SendGrid.
-"""
-
 from django.core.mail import send_mail
 from django.conf import settings
 import logging
@@ -21,11 +16,11 @@ def send_welcome_email(user):
         bool: True if email sent successfully, False otherwise
     """
     try:
-        subject = 'Welcome to Intikhab - Electronic Voting System'
+        subject = 'Welcome to Electronic Voting System'
         message = f"""
         Dear {user.get_full_name() or user.username},
         
-        Welcome to Intikhab, Pakistan's secure electronic voting platform!
+        Welcome to E-Voting, electronic voting platform!
         
         Your account has been successfully created and you're now part of the Citizens group.
         You can now participate in active elections and make your voice heard.
@@ -38,11 +33,8 @@ def send_welcome_email(user):
         
         Visit our platform at: http://localhost:8000
         
-        Thank you for being part of Pakistan's democratic future!
-        
         Best regards,
-        The Intikhab Team
-        Code for Pakistan
+        E-Voting
         """
         
         send_mail(
@@ -89,7 +81,7 @@ def send_election_notification(user, election):
         Visit: http://localhost:8000/elections/{election.id}/
         
         Best regards,
-        The Intikhab Team
+        E-Voting
         """
         
         send_mail(
@@ -136,7 +128,7 @@ def send_vote_confirmation(user, election):
         Your vote is secure and anonymous. Results will be available once the election closes.
         
         Best regards,
-        The Intikhab Team
+        E-Voting
         """
         
         send_mail(
@@ -163,7 +155,7 @@ def test_email_configuration():
         bool: True if test email sent successfully, False otherwise
     """
     try:
-        subject = 'Intikhab Email Configuration Test'
+        subject = 'Email Configuration Test'
         message = 'This is a test email to verify SendGrid integration is working correctly.'
         
         send_mail(

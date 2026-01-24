@@ -20,4 +20,4 @@ To respond to this invitation, please visit:
 This invitation will expire on {{ invitation.expires_at|date:"F d, Y H:i" }}.
 
 ---
-Intikhab - Electronic Voting System
+Electronic Voting System

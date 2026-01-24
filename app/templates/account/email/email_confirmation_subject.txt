@@ -1,4 +1,4 @@
 {% load i18n %}
 {% autoescape off %}
-Verify Your Intikhab Account - {{ current_site.name }}
+Verify Your Account - {{ current_site.name }}
 {% endautoescape %}
